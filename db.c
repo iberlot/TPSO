@@ -2,6 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+void menu(){
+	printf("MENU DE AYUDA\n");
+					printf("help para mostrar las opciones\n");
+					printf("add: permite agregar un objeto al archivo mediante parametro o stdin.\n");
+					printf("rem: permite eliminar un objeto al archivo indicando su clave.\n");
+					printf("upd: permite actualizar un objeto al archivo indicando su clave.\n");
+					printf("get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.\n");
+}
+
 int main(int argc, char *argv[]) {
 	int arg;
 	char texto[512];
@@ -25,20 +34,12 @@ int main(int argc, char *argv[]) {
 			switch (argv[arg][1]) {
 //			case 'help':
 			case 'h':
-				printf("MENU DE AYUDA");
-				printf("help para mostrar las opciones");
-				printf(
-						"add: permite agregar un objeto al archivo mediante parametro o stdin.");
-				printf(
-						"rem: permite eliminar un objeto al archivo indicando su clave.");
-				printf(
-						"upd: permite actualizar un objeto al archivo indicando su clave.");
-				printf(
-						"get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.");
+				menu();
 
 				break;
 //			case 'add':
 			case 'a':
+
 				break;
 //			case 'rem':
 			case 'r':
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]) {
 			case 'g':
 				break;
 			default:
+				menu();
 				printf("Parametro %s no soportado\n", argv[arg]);
 				break;
 			}
