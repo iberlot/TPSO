@@ -21,38 +21,47 @@ int main(int argc, char *argv[]) {
 	}
 
 	for (arg = 1; arg < argc; arg++) {
-		if (argv[arg][0] == '-') {
-			switch (argv[arg][1]) {
-//			case 'help':
-			case 'h':
-				printf("MENU DE AYUDA");
-				printf("help para mostrar las opciones");
-				printf(
-						"add: permite agregar un objeto al archivo mediante parametro o stdin.");
-				printf(
-						"rem: permite eliminar un objeto al archivo indicando su clave.");
-				printf(
-						"upd: permite actualizar un objeto al archivo indicando su clave.");
-				printf(
-						"get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.");
 
-				break;
-//			case 'add':
-			case 'a':
-				break;
-//			case 'rem':
-			case 'r':
-				break;
-//			case 'upd':
-			case 'u':
-				break;
-//			case 'get':
-			case 'g':
-				break;
-			default:
-				printf("Parametro %s no soportado\n", argv[arg]);
-				break;
+		switch (argv[arg][1]) {
+		case 'h':
+			if (strcmp(argv[arg], "help") != 1) {
+				codError = 2;
 			}
+			printf("MENU DE AYUDA");
+			printf("help para mostrar las opciones");
+			printf(
+					"add: permite agregar un objeto al archivo mediante parametro o stdin.");
+			printf(
+					"rem: permite eliminar un objeto al archivo indicando su clave.");
+			printf(
+					"upd: permite actualizar un objeto al archivo indicando su clave.");
+			printf(
+					"get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.");
+
+			break;
+		case 'a':
+			if (strcmp(argv[arg], "add") != 1) {
+				codError = 2;
+			}
+			break;
+		case 'r':
+			if (strcmp(argv[arg], "rem") != 1) {
+				codError = 2;
+			}
+			break;
+		case 'u':
+			if (strcmp(argv[arg], "upd") != 1) {
+				codError = 2;
+			}
+			break;
+		case 'g':
+			if (strcmp(argv[arg], "get") != 1) {
+				codError = 2;
+			}
+			break;
+		default:
+			printf("Parametro %s no soportado\n", argv[arg]);
+			break;
 		}
 	}
 
