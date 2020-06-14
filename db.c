@@ -12,32 +12,42 @@ int main(int argc, char *argv[]) {
 
 	int accion = 0;
 
-        	print("MENU DE AYUDA");
-        	print("help para mostrar las opciones");
-        	print("add: permite agregar un objeto al archivo mediante par�metro o stdin.");
-        	print("rem: permite eliminar un objeto al archivo indicando su clave.");
-        	print("upd: permite actualizar un objeto al archivo indicando su clave.");
-        	print("get: permite recuperar uno o varios objetos del archivo seg�n un filtro de b�squeda o su clave.");
-
 	if (accion == 1) {
 		if (argv[2][0] == '-') {
 			codError = 1;
 		}
 
-		archivo = argv[2];
+//		archivo = argv[2];
 	}
-	for (arg = 2; arg < argc; arg++) {
+
+	for (arg = 1; arg < argc; arg++) {
 		if (argv[arg][0] == '-') {
 			switch (argv[arg][1]) {
-			case 'help':
+//			case 'help':
+			case 'h':
+				printf("MENU DE AYUDA");
+				printf("help para mostrar las opciones");
+				printf(
+						"add: permite agregar un objeto al archivo mediante parametro o stdin.");
+				printf(
+						"rem: permite eliminar un objeto al archivo indicando su clave.");
+				printf(
+						"upd: permite actualizar un objeto al archivo indicando su clave.");
+				printf(
+						"get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.");
+
 				break;
-			case 'add':
+//			case 'add':
+			case 'a':
 				break;
-			case 'rem':
+//			case 'rem':
+			case 'r':
 				break;
-			case 'upd':
+//			case 'upd':
+			case 'u':
 				break;
-			case 'get':
+//			case 'get':
+			case 'g':
 				break;
 			default:
 				printf("Parametro %s no soportado\n", argv[arg]);
