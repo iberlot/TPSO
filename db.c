@@ -44,6 +44,11 @@ int main(int argc, char *argv[]) {
 			if (strcmp(argv[arg], "add") != 1) {
 				codError = 2;
 			}
+
+
+			// /home/user/person.dat -value '{"key":"abcd","name":"Juan
+			//Perez","age": 32,"height":1.76,"hasLicence":true}'
+
 			break;
 		case 'r':
 			if (strcmp(argv[arg], "rem") != 1) {
