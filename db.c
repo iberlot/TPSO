@@ -12,26 +12,12 @@ int main(int argc, char *argv[]) {
 
 	int accion = 0;
 
-	switch (argv[1][1]) {
-	case 'help':
-		accion = 66;
-		break;
-	case 'add':
-		accion = 1;
-		break;
-	case 'rem':
-		accion = 2;
-		break;
-	case 'upd':
-		accion = 3;
-		break;
-	case 'get':
-		accion = 4;
-		break;
-	default:
-		printf("Parametro %s no soportado\n", argv[arg]);
-		break;
-	}
+        	print("MENU DE AYUDA");
+        	print("help para mostrar las opciones");
+        	print("add: permite agregar un objeto al archivo mediante par�metro o stdin.");
+        	print("rem: permite eliminar un objeto al archivo indicando su clave.");
+        	print("upd: permite actualizar un objeto al archivo indicando su clave.");
+        	print("get: permite recuperar uno o varios objetos del archivo seg�n un filtro de b�squeda o su clave.");
 
 	if (accion == 1) {
 		if (argv[2][0] == '-') {
