@@ -15,6 +15,12 @@ int main(int argc, char *argv[])
     if(argv[arg][0] == '-'){
       switch (argv[arg][1]) {
         case 'help':
+        	print("MENU DE AYUDA");
+        	print("help para mostrar las opciones");
+        	print("add: permite agregar un objeto al archivo mediante parámetro o stdin.");
+        	print("rem: permite eliminar un objeto al archivo indicando su clave.");
+        	print("upd: permite actualizar un objeto al archivo indicando su clave.");
+        	print("get: permite recuperar uno o varios objetos del archivo según un filtro de búsqueda o su clave.");
           break;
         case 'add':
           break;
