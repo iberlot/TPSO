@@ -5,10 +5,14 @@
 void help() {
 	printf("MENU DE AYUDA\n\n");
 	printf("help para mostrar las opciones\n");
+	printf("Forma de uso de la sentencia:\n db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2\n");
+	printf("Lista de comandos aceptados\n");
 	printf("add: permite agregar un objeto al archivo mediante parametro o stdin.\n");
 	printf("rem: permite eliminar un objeto al archivo indicando su clave.\n");
 	printf("upd: permite actualizar un objeto al archivo indicando su clave.\n");
 	printf("get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.\n");
+	printf("archivo: Los comandos add, upd,get y rem requieren el path al archivo donde se leen/escriben los datos. Si el archivo no existe y se trata de una operación add, se crea el archivo y agrega el registro.\n");
+
 	printf("\n");
 }
 
@@ -41,35 +45,54 @@ int main(int argc, char *argv[]) {
 			help();
 
 			break;
+
 		case 'a':
 			if (strcmp(argv[arg], "add") != 1) {
 				codError = 2;
 				break;
 			}
-
+			if (argv[2][0] == '-') {
+				codError = 1;
+			}
 
 			// /home/user/person.dat -value '{"key":"abcd","name":"Juan
 			//Perez","age": 32,"height":1.76,"hasLicence":true}'
 
 			break;
+
 		case 'r':
 			if (strcmp(argv[arg], "rem") != 1) {
 				codError = 2;
 				break;
 			}
+			if (argv[2][0] == '-') {
+				codError = 1;
+			}
+
 			break;
+
 		case 'u':
 			if (strcmp(argv[arg], "upd") != 1) {
 				codError = 2;
 				break;
 			}
+			if (argv[2][0] == '-') {
+				codError = 1;
+			}
+
 			break;
+
 		case 'g':
 			if (strcmp(argv[arg], "get") != 1) {
 				codError = 2;
 				break;
 			}
+			if (argv[2][0] == '-') {
+				codError = 1;
+			}
+
 			break;
+
 		default:
 			codError = 2;
 			printf("Parametro %s no soportado\n", argv[arg]);
