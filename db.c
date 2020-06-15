@@ -32,10 +32,11 @@ int main(int argc, char *argv[]) {
 
 	for (arg = 1; arg < argc; arg++) {
 
-		switch (argv[arg][1]) {
+		switch (argv[arg][0]) {
 		case 'h':
 			if (strcmp(argv[arg], "help") != 1) {
 				codError = 2;
+				break;
 			}
 			help();
 
@@ -43,6 +44,7 @@ int main(int argc, char *argv[]) {
 		case 'a':
 			if (strcmp(argv[arg], "add") != 1) {
 				codError = 2;
+				break;
 			}
 
 
@@ -53,16 +55,19 @@ int main(int argc, char *argv[]) {
 		case 'r':
 			if (strcmp(argv[arg], "rem") != 1) {
 				codError = 2;
+				break;
 			}
 			break;
 		case 'u':
 			if (strcmp(argv[arg], "upd") != 1) {
 				codError = 2;
+				break;
 			}
 			break;
 		case 'g':
 			if (strcmp(argv[arg], "get") != 1) {
 				codError = 2;
+				break;
 			}
 			break;
 		default:
