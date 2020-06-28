@@ -54,9 +54,16 @@ int main(int argc, char *argv[]) {
 			if (argv[2][0] == '-') {
 				codError = 1;
 			}
+<<<<<<< Updated upstream
 
 			// /home/user/person.dat -value '{"key":"abcd","name":"Juan
 			//Perez","age": 32,"height":1.76,"hasLicence":true}'
+=======
+			char json[800];
+			printf("Ingrese los parametros y los valores: \n");
+			scanf( "%s", &json );
+			//Aca el json
+>>>>>>> Stashed changes
 
 			break;
 
