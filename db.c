@@ -1,8 +1,18 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <auxiliares.h>
+//#include <auxiliares.h>
+
+char* substr(char* cadena, int comienzo, int longitud) {
+	if (longitud == 0)
+		longitud = strlen(cadena) - comienzo;
+
+	char *nuevo = (char*) malloc(sizeof(char) * (longitud + 1));
+	nuevo[longitud] = '\0';
+	strncpy(nuevo, cadena + comienzo, longitud);
+
+	return nuevo;
+}
 
 void help() {
 	printf("MENU DE AYUDA\n\n");
@@ -18,43 +28,38 @@ void help() {
 	printf("\n");
 }
 
-void agregarDato(char *argv[], int codError, int arg){
+void agregarDato(char *argv[], int codError, int arg) {
 
 	printf("Entrando al Add...\n");
 
-			if (strcmp(argv[1], "add") != 0) {
-				printf("Parametro %s no soportado %i...\n", argv[arg], strcmp(argv[arg], "add"));
-				codError = 2;
-				break;
-			}
-			if (argv[2][0] == '-') {
-				codError = 1;
-				//strerror
-				break;
-			}
-			//char* buffer[4096];
-			//'{"key":"abcd","name":"Juan Perez","age":
-			//32,"height":1.76,"hasLicence":true}'
-			printf(substr(argv[4], 9, 4));
-			char* key = substr(argv[4], 9, 4);
-			printf(key);
-			printf("Creando archivo...\n");
+	if (strcmp(argv[1], "add") != 0) {
+		printf("Parametro %s no soportado %i...\n", argv[arg], strcmp(argv[arg], "add"));
+		codError = 2;
+	}
+	if (argv[2][0] == '-') {
+		codError = 1;
+	}
+	//char* buffer[4096];
+	//'{"key":"abcd","name":"Juan Perez","age":
+	//32,"height":1.76,"hasLicence":true}'
+	printf("%s", substr(argv[4], 8, 4));
+	char* key = substr(argv[4], 8, 4);
+	printf("Creando archivo...\n");
 
-			FILE *fp; // @suppress("Type cannot be resolved")
+	FILE *fp; // @suppress("Type cannot be resolved")
 
-			fp = fopen(argv[2], "a+");
+	fp = fopen(argv[2], "a+");
 
-			if (strcmp(argv[3], "-value") != 0) {
-				printf("El parametro %s", argv[3]);
-				codError = 2;
-				break;
-			}
+	if (strcmp(argv[3], "-value") != 0) {
+		printf("El parametro %s", argv[3]);
+		codError = 2;
+	}
 
-			fputs("\n", fp);
-			fputs("0", fp);
-			fputs(argv[4], fp);
-			printf(argv[4]);
-			fclose(fp);
+	fputs("\n", fp);
+	fputs("0", fp);
+	fputs(argv[4], fp);
+	printf("%s", argv[4]);
+	fclose(fp);
 
 }
 
@@ -87,7 +92,6 @@ int main(int argc, char *argv[]) {
 		help();
 
 		break;
-
 
 	case 'a':
 		agregarDato(argv, codError, arg);
