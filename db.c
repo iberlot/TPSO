@@ -11,7 +11,7 @@ void help() {
 	printf("rem: permite eliminar un objeto al archivo indicando su clave.\n");
 	printf("upd: permite actualizar un objeto al archivo indicando su clave.\n");
 	printf("get: permite recuperar uno o varios objetos del archivo segun un filtro de busqueda o su clave.\n");
-	printf("archivo: Los comandos add, upd,get y rem requieren el path al archivo donde se leen/escriben los datos. Si el archivo no existe y se trata de una operación add, se crea el archivo y agrega el registro.\n");
+	printf("archivo: Los comandos add, upd,get y rem requieren el path al archivo donde se leen/escriben los datos. Si el archivo no existe y se trata de una operaciï¿½n add, se crea el archivo y agrega el registro.\n");
 
 	printf("\n");
 }
