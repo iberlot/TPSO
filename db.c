@@ -47,7 +47,10 @@ int main(int argc, char *argv[]) {
 			break;
 
 		case 'a':
-			if (strcmp(argv[arg], "add") != 1) {
+			printf("Entrando al Add...\n");
+
+			if (strcmp(argv[arg], "add") != 0) {
+				printf("Parametro %s no soportado %i\n", argv[arg], strcmp(argv[arg], "add"));
 				codError = 2;
 				break;
 			}
@@ -55,10 +58,11 @@ int main(int argc, char *argv[]) {
 				codError = 1;
 			}
 			//char* buffer[4096];
-			fopen("/home/user/person.dat", "a+");
+			printf("Creando archivo...\n");
+			fopen("person.dat", "a+");
+
 			// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan
 			// Perez","age": 32,"height":1.76,"hasLicence":true}'
-
 
 			break;
 
