@@ -34,18 +34,18 @@ int verificarCoincidenciaKey(char* argv[]) { // @suppress("Type cannot be resolv
 
 	FILE *fpa; // @suppress("Type cannot be resolved")
 	fpa = fopen(argv[2], "a+");
-
+	int contador = 0;
 	while (feof(fpa) == 0) {
 		fgets(archivoS, 4096, fpa);
-
 		// 48 = 0 en ascii
 		if (archivoS[0] == 48) {
 			char* voS = substr(archivoS, 9, 4);
 
 			if (strcmp(key, voS) == 0) {
-				return 1;
+				return contador;
 			}
 		}
+		contador++;
 	}
 
 	return 0;
@@ -92,6 +92,53 @@ void agregarDato(char *argv[], int codError, int arg) {
 	}
 }
 
+void removerDato(char *argv[], int codError, int arg){
+	if (strcmp(argv[arg], "rem") != 1) {
+		codError = 2;
+	}
+	if (argv[2][0] == '-') {
+		codError = 1;
+	}
+	FILE *fp; // @suppress("Type cannot be resolved")
+	char archivo[4096];
+	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
+	void* NULL;
+	if(fp == NULL){
+		codError = 1;
+		printf("El archivo no existe");
+	}
+	//db rem person.dat -key abcd
+	if (strcmp(argv[3], "-key") != 0) {
+			printf("El parametro %s", argv[3]);
+			codError = 2;
+		}
+	int lineaNum = verificarCoincidenciaKey(argv);
+	int count = 0;
+	if (lineaNum != 0) {
+			codError = 2;
+			printf("No existe el objeto con clave %s en %s", argv[4], argv[2]);
+		} else {
+			 char line[256]; /* or other suitable maximum line size */
+			    while (fgets(line, sizeof line, fp) != NULL) /* read a line */
+			    {
+			        if (count == lineaNum)
+			        {
+			        	//Aca debe mostrar por pantalla la linea que encontro
+			        	if (line[0] == 48) {
+			        		line[0] = 49; //Es el 1 en ascii
+			        	}
+			        	fclose(fp);
+			        }
+			        else
+			        {
+			            count++;
+			        }
+			    }
+			    fclose(fp);
+		}
+	//db rem person.dat -key abcd
+}
+
 int main(int argc, char *argv[]) {
 	int arg;
 	char texto[512];
@@ -128,13 +175,7 @@ int main(int argc, char *argv[]) {
 		break;
 
 	case 'r':
-		if (strcmp(argv[arg], "rem") != 1) {
-			codError = 2;
-			break;
-		}
-		if (argv[2][0] == '-') {
-			codError = 1;
-		}
+		removerDato(argv, codError, arg);
 
 		break;
 
