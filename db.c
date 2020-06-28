@@ -1,6 +1,8 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <auxiliares.h>
 
 void help() {
 	printf("MENU DE AYUDA\n\n");
@@ -14,6 +16,46 @@ void help() {
 	printf("archivo: Los comandos add, upd,get y rem requieren el path al archivo donde se leen/escriben los datos. Si el archivo no existe y se trata de una operaci�n add, se crea el archivo y agrega el registro.\n");
 
 	printf("\n");
+}
+
+void agregarDato(char *argv[], int codError, int arg){
+
+	printf("Entrando al Add...\n");
+
+			if (strcmp(argv[1], "add") != 0) {
+				printf("Parametro %s no soportado %i...\n", argv[arg], strcmp(argv[arg], "add"));
+				codError = 2;
+				break;
+			}
+			if (argv[2][0] == '-') {
+				codError = 1;
+				//strerror
+				break;
+			}
+			//char* buffer[4096];
+			//'{"key":"abcd","name":"Juan Perez","age":
+			//32,"height":1.76,"hasLicence":true}'
+			printf(substr(argv[4], 9, 4));
+			char* key = substr(argv[4], 9, 4);
+			printf(key);
+			printf("Creando archivo...\n");
+
+			FILE *fp; // @suppress("Type cannot be resolved")
+
+			fp = fopen(argv[2], "a+");
+
+			if (strcmp(argv[3], "-value") != 0) {
+				printf("El parametro %s", argv[3]);
+				codError = 2;
+				break;
+			}
+
+			fputs("\n", fp);
+			fputs("0", fp);
+			fputs(argv[4], fp);
+			printf(argv[4]);
+			fclose(fp);
+
 }
 
 int main(int argc, char *argv[]) {
@@ -46,39 +88,9 @@ int main(int argc, char *argv[]) {
 
 		break;
 
+
 	case 'a':
-		printf("Entrando al Add...\n");
-
-		if (strcmp(argv[1], "add") != 0) {
-			printf("Parametro %s no soportado %i...\n", argv[arg], strcmp(argv[arg], "add"));
-			codError = 2;
-			break;
-		}
-		if (argv[2][0] == '-') {
-			codError = 1;
-			//strerror
-			break;
-		}
-		//char* buffer[4096];
-		printf("Creando archivo...\n");
-
-		FILE *fp; // @suppress("Type cannot be resolved")
-
-		fp = fopen(argv[2], "a+");
-
-		if (strcmp(argv[3], "-value") != 0) {
-			printf("El parametro %s", argv[3]);
-			codError = 2;
-			break;
-		}
-
-		fputs("\n", fp);
-		fputs("0", fp);
-		fputs(argv[4], fp);
-
-		fclose(fp);
-
-		// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan Perez","age": 32,"height":1.76,"hasLicence":true}'
+		agregarDato(argv, codError, arg);
 
 		break;
 
