@@ -54,16 +54,11 @@ int main(int argc, char *argv[]) {
 			if (argv[2][0] == '-') {
 				codError = 1;
 			}
-<<<<<<< Updated upstream
+			//char* buffer[4096];
+			fopen("/home/user/person.dat", "a+");
+			// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan
+			// Perez","age": 32,"height":1.76,"hasLicence":true}'
 
-			// /home/user/person.dat -value '{"key":"abcd","name":"Juan
-			//Perez","age": 32,"height":1.76,"hasLicence":true}'
-=======
-			char json[800];
-			printf("Ingrese los parametros y los valores: \n");
-			scanf( "%s", &json );
-			//Aca el json
->>>>>>> Stashed changes
 
 			break;
 
@@ -113,3 +108,4 @@ int main(int argc, char *argv[]) {
 	}
 	exit(0);
 }
+
