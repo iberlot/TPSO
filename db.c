@@ -34,89 +34,94 @@ int main(int argc, char *argv[]) {
 //		archivo = argv[2];
 	}
 
-	for (arg = 1; arg < argc; arg++) {
+//	for (arg = 1; arg < argc; arg++) {
 
-		switch (argv[arg][0]) {
-		case 'h':
-			if (strcmp(argv[arg], "help") != 1) {
-				codError = 2;
-				break;
-			}
-			help();
-
-			break;
-
-		case 'a':
-			printf("Entrando al Add...\n");
-
-			if (strcmp(argv[arg], "add") != 0) {
-				printf("Parametro %s no soportado %i\n", argv[arg], strcmp(argv[arg], "add"));
-				codError = 2;
-				break;
-			}
-			if (argv[2][0] == '-') {
-				codError = 1;
-				//strerror
-				break;
-			}
-			//char* buffer[4096];
-			printf("Creando archivo...\n");
-			fopen(argv[2], "a+");
-
-			if(strcmp(argv[3], "-value") != 0){
-				codError = 2;
-				break;
-			}
-			else{
-				fputs(argv[4], argv[2]);
-				fclose(argv[2]);
-
-			}
-
-			// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan Perez","age": 32,"height":1.76,"hasLicence":true}'
-
-			break;
-
-		case 'r':
-			if (strcmp(argv[arg], "rem") != 1) {
-				codError = 2;
-				break;
-			}
-			if (argv[2][0] == '-') {
-				codError = 1;
-			}
-
-			break;
-
-		case 'u':
-			if (strcmp(argv[arg], "upd") != 1) {
-				codError = 2;
-				break;
-			}
-			if (argv[2][0] == '-') {
-				codError = 1;
-			}
-
-			break;
-
-		case 'g':
-			if (strcmp(argv[arg], "get") != 1) {
-				codError = 2;
-				break;
-			}
-			if (argv[2][0] == '-') {
-				codError = 1;
-			}
-
-			break;
-
-		default:
+	switch (argv[1][0]) {
+	case 'h':
+		if (strcmp(argv[arg], "help") != 1) {
 			codError = 2;
-			printf("Parametro %s no soportado\n", argv[arg]);
-			help();
 			break;
 		}
+		help();
+
+		break;
+
+	case 'a':
+		printf("Entrando al Add...\n");
+
+		if (strcmp(argv[1], "add") != 0) {
+			printf("Parametro %s no soportado %i...\n", argv[arg], strcmp(argv[arg], "add"));
+			codError = 2;
+			break;
+		}
+		if (argv[2][0] == '-') {
+			codError = 1;
+			//strerror
+			break;
+		}
+		//char* buffer[4096];
+		printf("Creando archivo...\n");
+
+		FILE *fp; // @suppress("Type cannot be resolved")
+
+		fp = fopen(argv[2], "a+");
+
+		if (strcmp(argv[3], "-value") != 0) {
+			printf("El parametro %s", argv[3]);
+			codError = 2;
+			break;
+		}
+
+		fputs("\n", fp);
+		fputs("0", fp);
+		fputs(argv[4], fp);
+
+		fclose(fp);
+
+		// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan Perez","age": 32,"height":1.76,"hasLicence":true}'
+
+		break;
+
+	case 'r':
+		if (strcmp(argv[arg], "rem") != 1) {
+			codError = 2;
+			break;
+		}
+		if (argv[2][0] == '-') {
+			codError = 1;
+		}
+
+		break;
+
+	case 'u':
+		if (strcmp(argv[arg], "upd") != 1) {
+			codError = 2;
+			break;
+		}
+		if (argv[2][0] == '-') {
+			codError = 1;
+		}
+
+		break;
+
+	case 'g':
+		if (strcmp(argv[arg], "get") != 1) {
+			codError = 2;
+			break;
+		}
+		if (argv[2][0] == '-') {
+			codError = 1;
+		}
+
+		break;
+
+	default:
+		codError = 2;
+		printf("Parametro %s no soportado\n", argv[arg]);
+		help();
+		break;
 	}
+//	}
 
 	if (flagAdd == 1) {
 		printf("Los datos agregados quedaron de la siguiente manera: %s\n", texto);
