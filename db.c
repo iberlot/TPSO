@@ -56,13 +56,24 @@ int main(int argc, char *argv[]) {
 			}
 			if (argv[2][0] == '-') {
 				codError = 1;
+				//strerror
+				break;
 			}
 			//char* buffer[4096];
 			printf("Creando archivo...\n");
-			fopen("person.dat", "a+");
+			fopen(argv[2], "a+");
 
-			// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan
-			// Perez","age": 32,"height":1.76,"hasLicence":true}'
+			if(strcmp(argv[3], "-value") != 0){
+				codError = 2;
+				break;
+			}
+			else{
+				fputs(argv[4], argv[2]);
+				fclose(argv[2]);
+
+			}
+
+			// db add /home/user/person.dat -value '{"key":"abcd","name":"Juan Perez","age": 32,"height":1.76,"hasLicence":true}'
 
 			break;
 
