@@ -31,15 +31,21 @@ void help() {
 int verificarCoincidenciaKey(char* argv[]) { // @suppress("Type cannot be resolved")
 	int valor = 0;
 	char* key = substr(argv[4], 8, 4);
+	char archivoS[4096];
 
 	FILE *fpa; // @suppress("Type cannot be resolved")
 	fpa = fopen(argv[2], "a+");
 
-	char* archivoS = fgets(key, 4096, fpa);
-	archivoS = substr(archivoS, 8, 4);
-	if (strcmp(key, archivoS) != 0) {
-		valor++;
+	while (feof(fpa) == 0) {
+		fgets(archivoS, 4096, fpa);
+		char* voS = substr(archivoS, 8, 4);
+
+		if (strcmp(key, voS) != 0) {
+			valor++;
+			printf("puta madre\n");
+		}
 	}
+
 	printf("Documento: %s", archivoS);
 	return valor;
 }
