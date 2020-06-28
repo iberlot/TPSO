@@ -28,6 +28,19 @@ void help() {
 	printf("\n");
 }
 
+int verificarCoincidenciaKey(char* argv[], FILE arch){ // @suppress("Type cannot be resolved")
+	int valor = 0;
+	char* key = substr(argv[4], 8, 4);
+	char* archivoS = fgets(key, 4096, arch);
+	archivoS = substr(archivoS, 8, 4);
+	if (strcmp(key, archivoS) != 0) {
+		valor++;
+	}
+	printf("Documento: %s", archivoS);
+	return valor;
+}
+
+
 void agregarDato(char *argv[], int codError, int arg) {
 
 	printf("Entrando al Add...\n");
@@ -40,10 +53,8 @@ void agregarDato(char *argv[], int codError, int arg) {
 		codError = 1;
 	}
 	//char* buffer[4096];
-	//'{"key":"abcd","name":"Juan Perez","age":
-	//32,"height":1.76,"hasLicence":true}'
-	printf("%s", substr(argv[4], 8, 4));
-	char* key = substr(argv[4], 8, 4);
+	//'{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}'
+
 	printf("Creando archivo...\n");
 
 	FILE *fp; // @suppress("Type cannot be resolved")
@@ -55,12 +66,19 @@ void agregarDato(char *argv[], int codError, int arg) {
 		codError = 2;
 	}
 
+	int num = verificarCoincidenciaKey(argv, fp);
+	if(num != 0){
+		printf("La clave coincide con una clave ya existente en el archivo!");
+	}
+	else{
+
 	fputs("\n", fp);
 	fputs("0", fp);
 	fputs(argv[4], fp);
 	printf("%s", argv[4]);
 	fclose(fp);
 
+	}
 }
 
 int main(int argc, char *argv[]) {
