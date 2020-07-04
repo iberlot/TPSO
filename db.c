@@ -3,6 +3,7 @@
 #include <string.h>
 //#include <auxiliares.h>
 
+/* Lo que esta dentro de estos comentarios debe ir a una libreria */
 char* substr(char* cadena, int comienzo, int longitud) {
 	if (longitud == 0)
 		longitud = strlen(cadena) - comienzo;
@@ -14,11 +15,25 @@ char* substr(char* cadena, int comienzo, int longitud) {
 	return nuevo;
 }
 
+short existe(const char* ruta) {
+
+	FILE *archivo = fopen(ruta, "r"); // @suppress("Type cannot be resolved")
+
+	if (archivo) {
+		fclose(archivo);
+		return 1; //TRUE
+	} else {
+		return 0; //FALSE
+	}
+
+}
+/* Fin del codigo de libreria */
+
 void help() {
-	printf("MENU DE AYUDA\n\n");
+	printf("\nMENU DE AYUDA\n\n");
 	printf("help para mostrar las opciones\n");
 	printf("Forma de uso de la sentencia:\n db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2\n");
-	printf("Lista de comandos aceptados\n");
+	printf("\nLista de comandos aceptados\n");
 	printf("add: permite agregar un objeto al archivo mediante parametro o stdin.\n");
 	printf("rem: permite eliminar un objeto al archivo indicando su clave.\n");
 	printf("upd: permite actualizar un objeto al archivo indicando su clave.\n");
@@ -28,12 +43,38 @@ void help() {
 	printf("\n");
 }
 
-int verificarCoincidenciaKey(char* argv[]) { // @suppress("Type cannot be resolved")
-	char* key = substr(argv[4], 8, 4);
+void errores(int codError, char* extra) {
+//	{"status":"error","message":"Mensaje descriptivo del error."}
+	fprintf(stderr, "{\"status\":\"error\",\"message\":\"");
+	fprintf(stderr, "Error %i: ", codError);
+	switch (codError) {
+	case 1:
+		fprintf(stderr, "Falta parametro requerido...");
+		fprintf(stderr, "\"}\n");
+		help();
+		break;
+	case 2:
+		fprintf(stderr, "Comando no soportado, no se reconose %s...", extra);
+		fprintf(stderr, "\"}\n");
+		help();
+		break;
+	case 3:
+		fprintf(stderr, "La clave %s coincide con una clave ya existente en el archivo!", extra);
+		fprintf(stderr, "\"}\n");
+		break;
+	default:
+		fprintf(stderr, "Danger, Will Robinson...");
+		fprintf(stderr, "\"}\n");
+		break;
+	}
+	exit(0);
+}
+
+int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot be resolved")
 	char archivoS[4096];
 
 	FILE *fpa; // @suppress("Type cannot be resolved")
-	fpa = fopen(argv[2], "a+");
+	fpa = fopen(file, "a+");
 
 	while (feof(fpa) == 0) {
 		fgets(archivoS, 4096, fpa);
@@ -53,34 +94,34 @@ int verificarCoincidenciaKey(char* argv[]) { // @suppress("Type cannot be resolv
 
 void agregarDato(char *argv[], int codError, int arg) {
 
-	printf("Entrando al Add...\n");
+	printf("Realizando la carga de datos...\n");
 
-	if (strcmp(argv[1], "add") != 0) {
-		printf("Parametro %s no soportado %i...\n", argv[arg], strcmp(argv[arg], "add"));
-		codError = 2;
-	}
 	if (argv[2][0] == '-') {
-		codError = 1;
+		errores(1, "");
 	}
 	//char* buffer[4096];
 	//'{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}'
 
-	printf("Creando archivo...\n");
+	if (existe(argv[2]) == 0) {
+		printf("Creando archivo...\n");
+	}
 
 	FILE *fp; // @suppress("Type cannot be resolved")
 
 	fp = fopen(argv[2], "a+");
 
-	if (strcmp(argv[3], "-value") != 0) {
-		printf("El parametro %s", argv[3]);
-		codError = 2;
+	if (!argv[3]) {
+		errores(1, "");
 	}
 
-	int num = verificarCoincidenciaKey(argv);
+	if (strcmp(argv[3], "-value") != 0) {
+		errores(1, "");
+	}
+
+	int num = verificarCoincidenciaKey(argv[2], substr(argv[4], 8, 4));
 
 	if (num != 0) {
-		codError = 2;
-		printf("La clave coincide con una clave ya existente en el archivo!");
+		errores(3, substr(argv[4], 8, 4));
 	} else {
 
 		fputs("\n", fp);
@@ -92,6 +133,7 @@ void agregarDato(char *argv[], int codError, int arg) {
 	}
 }
 
+// db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2
 int main(int argc, char *argv[]) {
 	int arg;
 	char texto[512];
@@ -104,7 +146,7 @@ int main(int argc, char *argv[]) {
 
 	if (accion == 1) {
 		if (argv[2][0] == '-') {
-			codError = 1;
+			errores(1, "");
 		}
 
 //		archivo = argv[2];
@@ -114,8 +156,8 @@ int main(int argc, char *argv[]) {
 
 	switch (argv[1][0]) {
 	case 'h':
-		if (strcmp(argv[arg], "help") != 1) {
-			codError = 2;
+		if (strcmp(argv[1], "help") != 0) {
+			errores(2, argv[1]);
 			break;
 		}
 		help();
@@ -123,48 +165,47 @@ int main(int argc, char *argv[]) {
 		break;
 
 	case 'a':
+
+		if (strcmp(argv[1], "add") != 0) {
+			errores(2, argv[1]);
+		}
+
 		agregarDato(argv, codError, arg);
 
 		break;
 
 	case 'r':
-		if (strcmp(argv[arg], "rem") != 1) {
-			codError = 2;
-			break;
+		if (strcmp(argv[arg], "rem") != 0) {
+			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
-			codError = 1;
+			errores(1, "");
 		}
 
 		break;
 
 	case 'u':
-		if (strcmp(argv[arg], "upd") != 1) {
-			codError = 2;
-			break;
+		if (strcmp(argv[arg], "upd") != 0) {
+			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
-			codError = 1;
+			errores(1, "");
 		}
 
 		break;
 
 	case 'g':
-		if (strcmp(argv[arg], "get") != 1) {
-			codError = 2;
-			break;
+		if (strcmp(argv[arg], "get") != 0) {
+			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
-			codError = 1;
+			errores(1, "");
 		}
 
 		break;
 
 	default:
-		codError = 2;
-		printf("Parametro %s no soportado\n", argv[arg]);
-		help();
-		break;
+		errores(2, argv[1]);
 	}
 //	}
 

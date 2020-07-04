@@ -10,5 +10,6 @@
 
 char* substr(char* cadena, int comienzo, int longitud);
 char* substrHasta(char* cadena, int comienzo, int longitud);
+short existe(const char *fname);
 
 #endif /* AUXILIARES_H_ */
