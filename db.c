@@ -97,13 +97,6 @@ int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot 
 	char archivoS[4096];
 
 	FILE *fpa; // @suppress("Type cannot be resolved")
-<<<<<<< HEAD
-	fpa = fopen(argv[2], "a+");
-	int contador = 0;
-=======
-	fpa = fopen(file, "a+");
-
->>>>>>> master
 	while (feof(fpa) == 0) {
 		fgets(archivoS, 4096, fpa);
 		// 48 = 0 en ascii
@@ -171,31 +164,31 @@ void agregarDato(char *argv[], char *archivo) {
 	}
 }
 
-<<<<<<< HEAD
-void removerDato(char *argv[], int codError, int arg){
+
+void removerDato(char *argv[], int arg){
 	if (strcmp(argv[arg], "rem") != 1) {
-		codError = 2;
+		errores(2);
 	}
 	if (argv[2][0] == '-') {
-		codError = 1;
+		errores(1);
 	}
 	FILE *fp; // @suppress("Type cannot be resolved")
 	char archivo[4096];
 	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
 	void* NULL;
 	if(fp == NULL){
-		codError = 1;
+		errores(1);
 		printf("El archivo no existe");
 	}
 	//db rem person.dat -key abcd
 	if (strcmp(argv[3], "-key") != 0) {
 			printf("El parametro %s", argv[3]);
-			codError = 2;
+			errores(2);
 		}
 	int lineaNum = verificarCoincidenciaKey(argv);
 	int count = 0;
 	if (lineaNum != 0) {
-			codError = 2;
+			errores(2);
 			printf("No existe el objeto con clave %s en %s", argv[4], argv[2]);
 		} else {
 			 char line[256]; /* or other suitable maximum line size */
@@ -218,10 +211,8 @@ void removerDato(char *argv[], int codError, int arg){
 		}
 	//db rem person.dat -key abcd
 }
-
-=======
 // db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2
->>>>>>> master
+
 int main(int argc, char *argv[]) {
 	int arg;
 	char texto[512];
@@ -262,17 +253,13 @@ int main(int argc, char *argv[]) {
 		break;
 
 	case 'r':
-<<<<<<< HEAD
-		removerDato(argv, codError, arg);
-=======
+		removerDato(argv, arg);
 		if (strcmp(argv[arg], "rem") != 0) {
 			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
->>>>>>> master
-
 		break;
 
 	case 'u':
