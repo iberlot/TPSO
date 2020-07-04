@@ -27,13 +27,36 @@ short existe(const char* ruta) {
 	}
 
 }
+
+int longitud(char* cadena) {
+	int contador = 0;
+	// Recorrer la cadena hasta encontrar el carácter NUL o de terminación
+	while (cadena[contador] != 0) {
+		contador++;
+	}
+	return contador;
+}
+
+int EncontrarPrimeraPosicion(char* palabra, char caracter) {
+	for (int i = 0; i < longitud(palabra); i++) {
+		char carac = palabra[i];
+//		printf("|%i == %i|", carac, caracter);
+
+		if (palabra[i] == caracter) {
+			return i + 1;
+		}
+	}
+
+	return 0; //No se encontro el carácter
+}
+
 /* Fin del codigo de libreria */
 
 void help() {
 	printf("\nMENU DE AYUDA\n\n");
 	printf("help para mostrar las opciones\n");
 	printf("Forma de uso de la sentencia:\n db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2\n");
-	printf("\nLista de comandos aceptados\n");
+	printf("\n4Lista de comandos aceptados\n");
 	printf("add: permite agregar un objeto al archivo mediante parametro o stdin.\n");
 	printf("rem: permite eliminar un objeto al archivo indicando su clave.\n");
 	printf("upd: permite actualizar un objeto al archivo indicando su clave.\n");
@@ -81,7 +104,17 @@ int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot 
 
 		// 48 = 0 en ascii
 		if (archivoS[0] == 48) {
-			char* voS = substr(archivoS, 9, 4);
+			char* dato = strstr(archivoS, "\"key\":");
+			printf("\n|%s|\n", dato);
+
+			int posIni = 7;
+			int posFin = EncontrarPrimeraPosicion(dato, ',');
+			char* voS = substr(dato, posIni, posFin);
+
+			printf("\n|%i|\n", posFin);
+			printf("\n|%s|\n", voS);
+
+			exit(0);
 
 			if (strcmp(key, voS) == 0) {
 				return 1;
@@ -92,7 +125,7 @@ int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot 
 	return 0;
 }
 
-void agregarDato(char *argv[], int codError, int arg) {
+void agregarDato(char *argv[], char *archivo) {
 
 	printf("Realizando la carga de datos...\n");
 
@@ -102,13 +135,13 @@ void agregarDato(char *argv[], int codError, int arg) {
 	//char* buffer[4096];
 	//'{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}'
 
-	if (existe(argv[2]) == 0) {
+	if (existe(archivo) == 0) {
 		printf("Creando archivo...\n");
 	}
 
 	FILE *fp; // @suppress("Type cannot be resolved")
 
-	fp = fopen(argv[2], "a+");
+	fp = fopen(archivo, "a+");
 
 	if (!argv[3]) {
 		errores(1, "");
@@ -118,7 +151,7 @@ void agregarDato(char *argv[], int codError, int arg) {
 		errores(1, "");
 	}
 
-	int num = verificarCoincidenciaKey(argv[2], substr(argv[4], 8, 4));
+	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 8, 4));
 
 	if (num != 0) {
 		errores(3, substr(argv[4], 8, 4));
@@ -140,7 +173,6 @@ int main(int argc, char *argv[]) {
 	char archivo[50];
 	int flagArchivo = 0;
 	int flagAdd = 0;
-	int codError = 0;
 
 	int accion = 0;
 
@@ -170,7 +202,7 @@ int main(int argc, char *argv[]) {
 			errores(2, argv[1]);
 		}
 
-		agregarDato(argv, codError, arg);
+		agregarDato(argv, argv[2]);
 
 		break;
 
