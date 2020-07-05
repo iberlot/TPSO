@@ -11,12 +11,10 @@ char* substr(char* cadena, int comienzo, int longitud = 0) {
 
 char* substrHasta(char* cadena, int comienzo, char caracter) {
 
-	int posFin = EncontrarPrimeraPosicion(cadena, caracter);
+	char *nuevo = (char*) malloc(sizeof(char) * (1));
 
-	if (longitud == 0)
-		longitud = strlen(cadena) - comienzo;
+	int longitud = EncontrarPrimeraPosicion(nuevo, caracter);
 
-	char *nuevo = (char*) malloc(sizeof(char) * (longitud + 1));
 	nuevo[longitud] = '\0';
 	strncpy(nuevo, cadena + comienzo, longitud);
 

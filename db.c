@@ -50,6 +50,19 @@ int EncontrarPrimeraPosicion(char* palabra, char caracter) {
 	return 0; //No se encontro el carácter
 }
 
+char* substrHasta(char* cadena, int comienzo, char caracter) {
+
+	char *nuevo = (char*) malloc(sizeof(char) * ((strlen(cadena) - comienzo) + 1));
+	char *aux = cadena + comienzo;
+
+	int longitud = EncontrarPrimeraPosicion(aux, caracter);
+
+	nuevo[longitud] = '\0';
+	strncpy(nuevo, cadena + comienzo, longitud - 1);
+
+	return nuevo;
+}
+
 /* Fin del codigo de libreria */
 
 void help() {
@@ -85,6 +98,14 @@ void errores(int codError, char* extra) {
 		fprintf(stderr, "La clave %s coincide con una clave ya existente en el archivo!", extra);
 		fprintf(stderr, "\"}\n");
 		break;
+	case 4:
+		fprintf(stderr, "El archivo %s no existe.", extra);
+		fprintf(stderr, "\"}\n");
+		break;
+	case 5:
+		fprintf(stderr, "No se encontro la clave %s en el archivo.", extra);
+		fprintf(stderr, "\"}\n");
+		break;
 	default:
 		fprintf(stderr, "Danger, Will Robinson...");
 		fprintf(stderr, "\"}\n");
@@ -95,23 +116,22 @@ void errores(int codError, char* extra) {
 
 int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot be resolved")
 	char archivoS[4096];
+	int contador = 0;
 
 	FILE *fpa; // @suppress("Type cannot be resolved")
+
+	fpa = fopen(file, "a+");
+
 	while (feof(fpa) == 0) {
 		fgets(archivoS, 4096, fpa);
-		// 48 = 0 en ascii
-		if (archivoS[0] == 48) {
+
+		if (archivoS[0] == 48) { // 48 = 0 en ascii
 			char* dato = strstr(archivoS, "\"key\":");
-			printf("\n|%s|\n", dato);
 
 			int posIni = 7;
-			int posFin = EncontrarPrimeraPosicion(dato, ',');
-			char* voS = substr(dato, posIni, posFin);
 
-			printf("\n|%i|\n", posFin);
-			printf("\n|%s|\n", voS);
-
-			exit(0);
+			char* voS = substrHasta(dato, posIni, ',');
+			voS = substr(voS, 0, longitud(voS) - 1);
 
 			if (strcmp(key, voS) == 0) {
 				return contador;
@@ -164,51 +184,47 @@ void agregarDato(char *argv[], char *archivo) {
 	}
 }
 
-
-void removerDato(char *argv[], int arg){
+void removerDato(char *argv[], int arg) {
 	if (strcmp(argv[arg], "rem") != 1) {
-		errores(2);
+		errores(2, argv[arg]);
 	}
 	if (argv[2][0] == '-') {
-		errores(1);
+		errores(1, "");
 	}
 	FILE *fp; // @suppress("Type cannot be resolved")
 	char archivo[4096];
 	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
-	void* NULL;
-	if(fp == NULL){
-		errores(1);
-		printf("El archivo no existe");
+
+//	void* NULL;
+
+	if (fp == 0) {
+		errores(4, argv[2]);
 	}
 	//db rem person.dat -key abcd
 	if (strcmp(argv[3], "-key") != 0) {
-			printf("El parametro %s", argv[3]);
-			errores(2);
-		}
-	int lineaNum = verificarCoincidenciaKey(argv);
+		errores(2, argv[3]);
+	}
+	int lineaNum = verificarCoincidenciaKey(argv[2], substr(argv[4], 8, 4));
+
 	int count = 0;
 	if (lineaNum != 0) {
-			errores(2);
-			printf("No existe el objeto con clave %s en %s", argv[4], argv[2]);
-		} else {
-			 char line[256]; /* or other suitable maximum line size */
-			    while (fgets(line, sizeof line, fp) != NULL) /* read a line */
-			    {
-			        if (count == lineaNum)
-			        {
-			        	//Aca debe mostrar por pantalla la linea que encontro
-			        	if (line[0] == 48) {
-			        		line[0] = 49; //Es el 1 en ascii
-			        	}
-			        	fclose(fp);
-			        }
-			        else
-			        {
-			            count++;
-			        }
-			    }
-			    fclose(fp);
+		errores(2, argv[4]);
+	} else {
+		char line[256]; /* or other suitable maximum line size */
+		while (fgets(line, sizeof line, fp) != 0) /* read a line */
+		{
+			if (count == lineaNum) {
+				//Aca debe mostrar por pantalla la linea que encontro
+				if (line[0] == 48) {
+					line[0] = 49; //Es el 1 en ascii
+				}
+				fclose(fp);
+			} else {
+				count++;
+			}
 		}
+		fclose(fp);
+	}
 	//db rem person.dat -key abcd
 }
 // db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2
