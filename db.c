@@ -114,7 +114,19 @@ void errores(int codError, char* extra) {
 	exit(0);
 }
 
-int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot be resolved")
+char* recuperarKeyString(char* string) {
+
+	char* dato = strstr(string, "\"key\":");
+
+	int posIni = 7;
+
+	char* key = substrHasta(dato, posIni, ',');
+	key = substr(key, 0, longitud(key) - 1);
+
+	return key;
+}
+
+int verificarCoincidenciaKey(char* file, char* key) {
 	char archivoS[4096];
 	int contador = 0;
 
@@ -126,13 +138,15 @@ int verificarCoincidenciaKey(char* file, char* key) { // @suppress("Type cannot 
 		fgets(archivoS, 4096, fpa);
 
 		if (archivoS[0] == 48) { // 48 = 0 en ascii
-			char* dato = strstr(archivoS, "\"key\":");
+//			char* dato = strstr(archivoS, "\"key\":");
+//
+//			int posIni = 7;
+//
+//			char* voS = substrHasta(dato, posIni, ',');
+//			voS = substr(voS, 0, longitud(voS) - 1);
+			char* voS = recuperarKeyString(archivoS);
 
-			int posIni = 7;
-
-			char* voS = substrHasta(dato, posIni, ',');
-			voS = substr(voS, 0, longitud(voS) - 1);
-
+			printf("%s == %s\n", key, voS);
 			if (strcmp(key, voS) == 0) {
 				return contador;
 			}
@@ -169,7 +183,7 @@ void agregarDato(char *argv[], char *archivo) {
 		errores(1, "");
 	}
 
-	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 8, 4));
+	int num = verificarCoincidenciaKey(archivo, recuperarKeyString(argv[4]));
 
 	if (num != 0) {
 		errores(3, substr(argv[4], 8, 4));
@@ -178,7 +192,7 @@ void agregarDato(char *argv[], char *archivo) {
 		fputs("\n", fp);
 		fputs("0", fp);
 		fputs(argv[4], fp);
-		printf("%s", argv[4]);
+		printf("%s\n", argv[4]);
 		fclose(fp);
 
 	}
@@ -215,7 +229,7 @@ void removerDato(char *argv[], int arg) {
 		{
 			if (count == lineaNum) {
 				//Aca debe mostrar por pantalla la linea que encontro
-				printf(line);
+				printf("%s", line);
 				if (line[0] == 48) {
 					line[0] = 49; //Es el 1 en ascii
 				}
@@ -232,78 +246,77 @@ void removerDato(char *argv[], int arg) {
 
 void updateDato(char *argv[], int arg, char *archivo) { //VER *archivo
 	FILE *fp; // @suppress("Type cannot be resolved")
-	char archivo[4096];
+//	char archivo[4096];
 	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
 	if (strcmp(argv[arg], "upd") != 1) {
-			errores(2, argv[arg]);
-		}
+		errores(2, argv[arg]);
+	}
 	if (existe(archivo) == 1) { //Si el archivo no existe
 		errores(4, argv[arg]);
-		}
+	}
 	if (strcmp(argv[3], "-key") != 0) {
-			errores(2, argv[3]);
-		}
+		errores(2, argv[3]);
+	}
 
 	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
 
-		if (num != 0) {
-			errores(3, substr(argv[4], 23, 4));
-		}
-		else{
-			char line[256]; /* or other suitable maximum line size */
-			int count = 0;
-					while (fgets(line, sizeof line, fp) != 0) /* read a line */
-					{
-						if (count == num) {
-							line = argv[4];
-							//Aca muestra por pantalla lo que encontro ya editado
-							printf(line);
-							fclose(fp);
-						} else {
-							count++;
-						}
+	if (num != 0) {
+		errores(3, substr(argv[4], 23, 4));
+	} else {
+		char line[256]; /* or other suitable maximum line size */
+		int count = 0;
+		while (fgets(line, sizeof line, fp) != 0) /* read a line */
+		{
+			if (count == num) {
+//				line = argv[4];
+				//Aca muestra por pantalla lo que encontro ya editado
+				printf("%s", argv[4]);
+				fclose(fp);
+			} else {
+				count++;
+			}
 		}
 
-
+	}
 }
 //No Aclara si quiere solo actualizar un dato por ende actualizamos todo el objeto y fin
 //db upd person.dat -key abcd valorAmodificar
 //{"key":"abcd","name":"Juan Perez","age":34,"height":1.76,"hasLicence":false}
 
-void getDato(char *argv[], int arg, char *archivo){
+void getDato(char *argv[], int arg, char *archivo) {
 	FILE *fil; // @suppress("Type cannot be resolved")
-		char archivo[4096];
-		if (strcmp(argv[arg], "get") != 1) {
-				errores(2, argv[arg]);
-			}
-		if (existe(archivo) == 1) { //Si el archivo no existe
-			errores(4, argv[arg]);
-			}
-		if (strcmp(argv[3], "-key") != 0) {
-				errores(2, argv[3]);
-			}
+//		char archivo[4096];
+	if (strcmp(argv[arg], "get") != 1) {
+		errores(2, argv[arg]);
+	}
+	if (existe(archivo) == 1) { //Si el archivo no existe
+		errores(4, argv[arg]);
+	}
+	if (strcmp(argv[3], "-key") != 0) {
+		errores(2, argv[3]);
+	}
 
-		int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
-		fil = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
+	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
+	fil = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
 
-			if (num != 0) {
-				errores(3, substr(argv[4], 23, 4));
+	if (num != 0) {
+		errores(3, substr(argv[4], 23, 4));
+	} else {
+		char line[256]; /* or other suitable maximum line size */
+		int count = 0;
+		while (fgets(line, sizeof line, fil) != 0) /* read a line */
+		{
+			if (count == num) {
+				//Aca muestra por pantalla lo que encontro ya editado
+				printf("%s", line);
+				fclose(fil);
+			} else {
+				count++;
 			}
-			else{
-				char line[256]; /* or other suitable maximum line size */
-				int count = 0;
-						while (fgets(line, sizeof line, fil) != 0) /* read a line */
-						{
-							if (count == num) {
-								//Aca muestra por pantalla lo que encontro ya editado
-								printf(line);
-								fclose(fil);
-							} else {
-								count++;
-							}
-			}
-	///db get person.dat -key abcd
-	//No se como poner el tema del filter. Mañana lo vemos
+		}
+		///db get person.dat -key abcd
+		//No se como poner el tema del filter. Mañana lo vemos
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -362,7 +375,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		updateDato(argv, arg); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
+		updateDato(argv, arg, argv[2]); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
 		break;
 
 	case 'g':
@@ -372,7 +385,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		getDato(argv, arg); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
+		getDato(argv, arg, argv[2]); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
 		break;
 
 	default:
