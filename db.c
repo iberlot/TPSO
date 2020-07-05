@@ -74,6 +74,8 @@ char* recuperarKeyString(char* string);
 int verificarCoincidenciaKey(char* file, char* key);
 void agregarDato(char *dato, char *archivo);
 void removerDato(char *archivo, char* key);
+void updateDato(char *dato, char *archivo);
+void getDato(char *argv[], int arg, char *archivo);
 
 /* FIN DE MAQUETADO */
 
@@ -165,8 +167,6 @@ int verificarCoincidenciaKey(char* file, char* key) {
 	return 0;
 }
 
-//char* buffer[4096];
-//'{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}'
 void agregarDato(char *dato, char *archivo) {
 
 	printf("Realizando la carga de datos...\n");
@@ -191,7 +191,6 @@ void agregarDato(char *dato, char *archivo) {
 	}
 }
 
-//db rem person.dat -key abcd
 void removerDato(char* file, char* key) {
 
 	FILE *fp; // @suppress("Type cannot be resolved")
@@ -227,43 +226,36 @@ void removerDato(char* file, char* key) {
 	}
 }
 
-// db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2
-
-void updateDato(char *argv[], int arg, char *archivo) { //VER *archivo
+void updateDato(char *dato, char *archivo) { //VER *archivo
 	FILE *fp; // @suppress("Type cannot be resolved")
-//	char archivo[4096];
-	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
-	if (strcmp(argv[arg], "upd") != 1) {
-		errores(2, argv[arg]);
-	}
-	if (existe(archivo) == 1) { //Si el archivo no existe
-		errores(4, argv[arg]);
-	}
-	if (strcmp(argv[3], "-key") != 0) {
-		errores(2, argv[3]);
-	}
+	fp = fopen(archivo, "r+");
 
-	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
-
-	if (num != 0) {
-		errores(3, substr(argv[4], 23, 4));
+	if (!fp) {
+		errores(4, archivo);
+	}
+	int lineaNum = verificarCoincidenciaKey(archivo, recuperarKeyString(dato));
+	if (lineaNum == 0) {
+		errores(5, recuperarKeyString(dato));
 	} else {
-		char line[256]; /* or other suitable maximum line size */
+		char line[4096]; /* or other suitable maximum line size */
 		int count = 0;
 		while (fgets(line, sizeof line, fp) != 0) /* read a line */
 		{
-			if (count == num) {
-//				line = argv[4];
-				//Aca muestra por pantalla lo que encontro ya editado
-				printf("%s", argv[4]);
-				fclose(fp);
+			if (count == (lineaNum - 1)) {
+				fputs("0", fp);
+				fputs(dato, fp);
+				fputs("\0", fp);
+				//XXX aca debe blanquear todo lo que le siga para que no quede basura al final de la isercion
+
+				printf("%s\n", dato);
+				count++;
 			} else {
 				count++;
 			}
 		}
-
 	}
 }
+
 //No Aclara si quiere solo actualizar un dato por ende actualizamos todo el objeto y fin
 //db upd person.dat -key abcd valorAmodificar
 //{"key":"abcd","name":"Juan Perez","age":34,"height":1.76,"hasLicence":false}
@@ -367,13 +359,15 @@ int main(int argc, char *argv[]) {
 		break;
 
 	case 'u':
-		if (strcmp(argv[arg], "upd") != 0) {
+		if (strcmp(argv[1], "upd") != 0) {
 			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		updateDato(argv, arg, argv[2]); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
+		char *dato = malloc(4096);
+		dato = argv[4];
+		updateDato(dato, argv[2]); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
 		break;
 
 	case 'g':
