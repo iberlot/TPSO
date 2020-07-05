@@ -215,6 +215,7 @@ void removerDato(char *argv[], int arg) {
 		{
 			if (count == lineaNum) {
 				//Aca debe mostrar por pantalla la linea que encontro
+				printf(line);
 				if (line[0] == 48) {
 					line[0] = 49; //Es el 1 en ascii
 				}
@@ -228,6 +229,46 @@ void removerDato(char *argv[], int arg) {
 	//db rem person.dat -key abcd
 }
 // db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2
+
+void updateDato(char *argv[], int arg, char *archivo) { //VER *archivo
+	FILE *fp; // @suppress("Type cannot be resolved")
+	char archivo[4096];
+	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
+	if (strcmp(argv[arg], "upd") != 1) {
+			errores(2, argv[arg]);
+		}
+	if (existe(archivo) == 1) { //Si el archivo no existe
+		errores(4, argv[arg]);
+		}
+	if (strcmp(argv[3], "-key") != 0) {
+			errores(2, argv[3]);
+		}
+
+	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
+
+		if (num != 0) {
+			errores(3, substr(argv[4], 23, 4));
+		}
+		else{
+			char line[256]; /* or other suitable maximum line size */
+			int count = 0;
+					while (fgets(line, sizeof line, fp) != 0) /* read a line */
+					{
+						if (count == num) {
+							line = argv[4];
+							//Aca muestra por pantalla lo que encontro ya editado
+							printf(line);
+							fclose(fp);
+						} else {
+							count++;
+						}
+		}
+
+
+}
+//No Aclara si quiere solo actualizar un dato por ende actualizamos todo el objeto y fin
+//db upd person.dat -key abcd valorAmodificar
+//{"key":"abcd","name":"Juan Perez","age":34,"height":1.76,"hasLicence":false}
 
 int main(int argc, char *argv[]) {
 	int arg;
@@ -269,13 +310,13 @@ int main(int argc, char *argv[]) {
 		break;
 
 	case 'r':
-		removerDato(argv, arg);
 		if (strcmp(argv[arg], "rem") != 0) {
 			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
+		removerDato(argv, arg);
 		break;
 
 	case 'u':
@@ -285,7 +326,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-
+		updateDato(argv, arg);
 		break;
 
 	case 'g':
@@ -295,7 +336,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-
+		removerDato(argv, arg);
 		break;
 
 	default:
