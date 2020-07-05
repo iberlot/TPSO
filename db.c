@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 //#include <auxiliares.h>
+//#include "auxiliares.c"
 
 /* Lo que esta dentro de estos comentarios debe ir a una libreria */
 char* substr(char* cadena, int comienzo, int longitud) {
@@ -65,11 +66,22 @@ char* substrHasta(char* cadena, int comienzo, char caracter) {
 
 /* Fin del codigo de libreria */
 
+/* MAQUETADO DE FUNCIONES */
+
+void help();
+void errores(int codError, char* extra);
+char* recuperarKeyString(char* string);
+int verificarCoincidenciaKey(char* file, char* key);
+void agregarDato(char *dato, char *archivo);
+void removerDato(char *archivo, char* key);
+
+/* FIN DE MAQUETADO */
+
 void help() {
 	printf("\nMENU DE AYUDA\n\n");
 	printf("help para mostrar las opciones\n");
 	printf("Forma de uso de la sentencia:\n db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2\n");
-	printf("\n4Lista de comandos aceptados\n");
+	printf("\nLista de comandos aceptados\n");
 	printf("add: permite agregar un objeto al archivo mediante parametro o stdin.\n");
 	printf("rem: permite eliminar un objeto al archivo indicando su clave.\n");
 	printf("upd: permite actualizar un objeto al archivo indicando su clave.\n");
@@ -80,37 +92,39 @@ void help() {
 }
 
 void errores(int codError, char* extra) {
-//	{"status":"error","message":"Mensaje descriptivo del error."}
+	int aiuda = 0;
+
 	fprintf(stderr, "{\"status\":\"error\",\"message\":\"");
 	fprintf(stderr, "Error %i: ", codError);
 	switch (codError) {
 	case 1:
 		fprintf(stderr, "Falta parametro requerido...");
-		fprintf(stderr, "\"}\n");
-		help();
+		aiuda = 1;
 		break;
 	case 2:
 		fprintf(stderr, "Comando no soportado, no se reconoce %s...", extra);
-		fprintf(stderr, "\"}\n");
-		help();
+		aiuda = 1;
 		break;
 	case 3:
-		fprintf(stderr, "La clave %s coincide con una clave ya existente en el archivo!", extra);
-		fprintf(stderr, "\"}\n");
+		fprintf(stderr, "La clave \'%s\' coincide con una clave ya existente en el archivo!", extra);
 		break;
 	case 4:
 		fprintf(stderr, "El archivo %s no existe.", extra);
-		fprintf(stderr, "\"}\n");
 		break;
 	case 5:
 		fprintf(stderr, "No se encontro la clave %s en el archivo.", extra);
-		fprintf(stderr, "\"}\n");
 		break;
 	default:
 		fprintf(stderr, "Danger, Will Robinson...");
-		fprintf(stderr, "\"}\n");
 		break;
 	}
+
+	fprintf(stderr, "\"}\n");
+
+	if (aiuda == 1) {
+		help();
+	}
+
 	exit(0);
 }
 
@@ -138,16 +152,10 @@ int verificarCoincidenciaKey(char* file, char* key) {
 		fgets(archivoS, 4096, fpa);
 
 		if (archivoS[0] == 48) { // 48 = 0 en ascii
-//			char* dato = strstr(archivoS, "\"key\":");
-//
-//			int posIni = 7;
-//
-//			char* voS = substrHasta(dato, posIni, ',');
-//			voS = substr(voS, 0, longitud(voS) - 1);
 			char* voS = recuperarKeyString(archivoS);
-
-			printf("%s == %s\n", key, voS);
+//			printf("%s == %s\n", voS, key);
 			if (strcmp(key, voS) == 0) {
+//				printf("OK");
 				return contador;
 			}
 		}
@@ -157,15 +165,11 @@ int verificarCoincidenciaKey(char* file, char* key) {
 	return 0;
 }
 
-void agregarDato(char *argv[], char *archivo) {
+//char* buffer[4096];
+//'{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}'
+void agregarDato(char *dato, char *archivo) {
 
 	printf("Realizando la carga de datos...\n");
-
-	if (argv[2][0] == '-') {
-		errores(1, "");
-	}
-	//char* buffer[4096];
-	//'{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}'
 
 	if (existe(archivo) == 0) {
 		printf("Creando archivo...\n");
@@ -175,64 +179,45 @@ void agregarDato(char *argv[], char *archivo) {
 
 	fp = fopen(archivo, "a+");
 
-	if (!argv[3]) {
-		errores(1, "");
-	}
-
-	if (strcmp(argv[3], "-value") != 0) {
-		errores(1, "");
-	}
-
-	int num = verificarCoincidenciaKey(archivo, recuperarKeyString(argv[4]));
-
-	if (num != 0) {
-		errores(3, substr(argv[4], 8, 4));
+	if (verificarCoincidenciaKey(archivo, recuperarKeyString(dato)) != 0) {
+		errores(3, recuperarKeyString(dato));
 	} else {
 
 		fputs("\n", fp);
 		fputs("0", fp);
-		fputs(argv[4], fp);
-		printf("%s\n", argv[4]);
+		fputs(dato, fp);
+		printf("%s\n", dato);
 		fclose(fp);
-
 	}
 }
 
-void removerDato(char *argv[], int arg) {
-	if (strcmp(argv[arg], "rem") != 1) {
-		errores(2, argv[arg]);
-	}
-	if (argv[2][0] == '-') {
-		errores(1, "");
-	}
-	FILE *fp; // @suppress("Type cannot be resolved")
-	char archivo[4096];
-	fp = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
+//db rem person.dat -key abcd
+void removerDato(char* file, char* key) {
 
-//	void* NULL;
+	FILE *fp; // @suppress("Type cannot be resolved")
+
+	fp = fopen(file, "r+"); //No verifica cuando no existe el archivo
 
 	if (fp == 0) {
-		errores(4, argv[2]);
+		errores(4, file);
 	}
-	//db rem person.dat -key abcd
-	if (strcmp(argv[3], "-key") != 0) {
-		errores(2, argv[3]);
-	}
-	int lineaNum = verificarCoincidenciaKey(argv[2], substr(argv[4], 8, 4));
+	int lineaNum = verificarCoincidenciaKey(file, key);
 
 	int count = 0;
-	if (lineaNum != 0) {
-		errores(2, argv[4]);
+
+	if (lineaNum == 0) {
+		errores(5, key);
 	} else {
-		char line[256]; /* or other suitable maximum line size */
+		char line[4096]; /* or other suitable maximum line size */
 		while (fgets(line, sizeof line, fp) != 0) /* read a line */
 		{
-			if (count == lineaNum) {
-				//Aca debe mostrar por pantalla la linea que encontro
-				printf("%s", line);
+			if (count == (lineaNum - 1)) {
 				if (line[0] == 48) {
-					line[0] = 49; //Es el 1 en ascii
+					fputs("1", fp);
 				}
+				count++;
+			} else if (count == lineaNum) {
+				printf("%s", line);
 				fclose(fp);
 			} else {
 				count++;
@@ -240,8 +225,8 @@ void removerDato(char *argv[], int arg) {
 		}
 		fclose(fp);
 	}
-	//db rem person.dat -key abcd
 }
+
 // db comando archivo -nombreparam1 valorparam1 -nombreparam2 valorparam2
 
 void updateDato(char *argv[], int arg, char *archivo) { //VER *archivo
@@ -354,18 +339,31 @@ int main(int argc, char *argv[]) {
 			errores(2, argv[1]);
 		}
 
-		agregarDato(argv, argv[2]);
+		if (argv[2][0] == '-') {
+			errores(1, "");
+		}
+
+		if ((!argv[3]) || (strcmp(argv[3], "-value") != 0)) {
+			errores(1, "");
+			// XXX aca hay que verificar si no hay nada en el stdin
+		}
+
+		agregarDato(argv[4], argv[2]);
 
 		break;
 
 	case 'r':
-		if (strcmp(argv[arg], "rem") != 0) {
+
+		if (strcmp(argv[1], "rem") != 0) {
 			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		removerDato(argv, arg);
+		if (strcmp(argv[3], "-key") != 0) {
+			errores(2, argv[3]);
+		}
+		removerDato(argv[2], argv[4]);
 		break;
 
 	case 'u':
