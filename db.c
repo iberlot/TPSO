@@ -90,7 +90,7 @@ void errores(int codError, char* extra) {
 		help();
 		break;
 	case 2:
-		fprintf(stderr, "Comando no soportado, no se reconose %s...", extra);
+		fprintf(stderr, "Comando no soportado, no se reconoce %s...", extra);
 		fprintf(stderr, "\"}\n");
 		help();
 		break;
@@ -270,6 +270,42 @@ void updateDato(char *argv[], int arg, char *archivo) { //VER *archivo
 //db upd person.dat -key abcd valorAmodificar
 //{"key":"abcd","name":"Juan Perez","age":34,"height":1.76,"hasLicence":false}
 
+void getDato(char *argv[], int arg, char *archivo){
+	FILE *fil; // @suppress("Type cannot be resolved")
+		char archivo[4096];
+		if (strcmp(argv[arg], "get") != 1) {
+				errores(2, argv[arg]);
+			}
+		if (existe(archivo) == 1) { //Si el archivo no existe
+			errores(4, argv[arg]);
+			}
+		if (strcmp(argv[3], "-key") != 0) {
+				errores(2, argv[3]);
+			}
+
+		int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
+		fil = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
+
+			if (num != 0) {
+				errores(3, substr(argv[4], 23, 4));
+			}
+			else{
+				char line[256]; /* or other suitable maximum line size */
+				int count = 0;
+						while (fgets(line, sizeof line, fil) != 0) /* read a line */
+						{
+							if (count == num) {
+								//Aca muestra por pantalla lo que encontro ya editado
+								printf(line);
+								fclose(fil);
+							} else {
+								count++;
+							}
+			}
+	///db get person.dat -key abcd
+	//No se como poner el tema del filter. Mañana lo vemos
+}
+
 int main(int argc, char *argv[]) {
 	int arg;
 	char texto[512];
@@ -326,7 +362,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		updateDato(argv, arg);
+		updateDato(argv, arg); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
 		break;
 
 	case 'g':
@@ -336,7 +372,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		removerDato(argv, arg);
+		getDato(argv, arg); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
 		break;
 
 	default:
