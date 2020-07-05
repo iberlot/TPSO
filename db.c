@@ -75,7 +75,7 @@ int verificarCoincidenciaKey(char* file, char* key);
 void agregarDato(char *dato, char *archivo);
 void removerDato(char *archivo, char* key);
 void updateDato(char *dato, char *archivo);
-void getDato(char *argv[], int arg, char *archivo);
+void getDato(char *key, char *archivo);
 
 /* FIN DE MAQUETADO */
 
@@ -256,44 +256,62 @@ void updateDato(char *dato, char *archivo) { //VER *archivo
 	}
 }
 
-//No Aclara si quiere solo actualizar un dato por ende actualizamos todo el objeto y fin
-//db upd person.dat -key abcd valorAmodificar
-//{"key":"abcd","name":"Juan Perez","age":34,"height":1.76,"hasLicence":false}
-
-void getDato(char *argv[], int arg, char *archivo) {
+void getDato(char *key, char *archivo) {
 	FILE *fil; // @suppress("Type cannot be resolved")
-//		char archivo[4096];
-	if (strcmp(argv[arg], "get") != 1) {
-		errores(2, argv[arg]);
-	}
-	if (existe(archivo) == 1) { //Si el archivo no existe
-		errores(4, argv[arg]);
-	}
-	if (strcmp(argv[3], "-key") != 0) {
-		errores(2, argv[3]);
+
+	int num = verificarCoincidenciaKey(archivo, key);
+	fil = fopen(archivo, "r"); //No verifica cuando no existe el archivo
+
+	if (!fil) {
+		errores(4, archivo);
 	}
 
-	int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
-	fil = fopen(argv[2], "r"); //No verifica cuando no existe el archivo
-
-	if (num != 0) {
-		errores(3, substr(argv[4], 23, 4));
+	if (num == 0) {
+		errores(5, key);
 	} else {
-		char line[256]; /* or other suitable maximum line size */
+		char line[4096];
 		int count = 0;
-		while (fgets(line, sizeof line, fil) != 0) /* read a line */
-		{
+		while (fgets(line, sizeof line, fil) != 0) {
 			if (count == num) {
-				//Aca muestra por pantalla lo que encontro ya editado
-				printf("%s", line);
+				printf("%s", line + 1);
 				fclose(fil);
 			} else {
 				count++;
 			}
 		}
-		///db get person.dat -key abcd
-		//No se como poner el tema del filter. Mañana lo vemos
 	}
+}
+
+void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
+	FILE *fil; // @suppress("Type cannot be resolved")
+//		char archivo[4096];
+	/*
+	 if (existe(archivo) == 1) { //Si el archivo no existe
+	 errores(4, archivo);
+	 }
+
+	 int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
+
+	 fil = fopen(archivo, "r"); //No verifica cuando no existe el archivo
+
+	 if (num != 0) {
+	 errores(3, substr(argv[4], 23, 4));
+	 } else {
+	 char line[256];
+	 int count = 0;
+	 while (fgets(line, sizeof line, fil) != 0)
+	 {
+	 if (count == num) {
+	 //Aca muestra por pantalla lo que encontro ya editado
+	 printf("%s", line);
+	 fclose(fil);
+	 } else {
+	 count++;
+	 }
+	 }
+	 ///db get person.dat -key abcd
+	 //No se como poner el tema del filter. Mañana lo vemos
+	 }*/
 }
 
 int main(int argc, char *argv[]) {
@@ -309,11 +327,7 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-
-//		archivo = argv[2];
 	}
-
-//	for (arg = 1; arg < argc; arg++) {
 
 	switch (argv[1][0]) {
 	case 'h':
@@ -367,27 +381,33 @@ int main(int argc, char *argv[]) {
 		}
 		char *dato = malloc(4096);
 		dato = argv[4];
-		updateDato(dato, argv[2]); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
+		updateDato(dato, argv[2]);
 		break;
 
 	case 'g':
-		if (strcmp(argv[arg], "get") != 0) {
+		if (strcmp(argv[1], "get") != 0) {
 			errores(2, argv[1]);
 		}
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		getDato(argv, arg, argv[2]); //TODO Faltaria el parametro file pero nse si da ponerlo en el main
+
+		if (strcmp(argv[3], "-key") == 0) {
+			getDato(argv[4], argv[2]);
+		} else if (strcmp(argv[3], "-filter") == 0) {
+			getDatoFilter(argv[4], argv[5], argv[6], argv[2]);
+		} else {
+			errores(2, argv[3]);
+		}
+
 		break;
 
 	default:
 		errores(2, argv[1]);
 	}
-//	}
 
 	if (flagAdd == 1) {
 		printf("Los datos agregados quedaron de la siguiente manera: %s\n", texto);
 	}
 	exit(0);
 }
-
