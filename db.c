@@ -4,63 +4,6 @@
 //#include <auxiliares.h>
 //#include "auxiliares.c"
 
-short formatoJson(char* cadena){
-	int llavePrincipal = 0;
-	int llaveFinal = 0;
-	//int verificadoTotal = 0;
-	for(int i = 0; i < longitud(cadena); i++){
-		if(cadena[i] == '{'){
-			llavePrincipal++;
-		}
-		if(cadena[i] == '}'){
-			llaveFinal++;
-		}
-		char* parametro = strtok(cadena, ","); //El famoso split de java
-		if(parametro == NULL){ //Si no hay coma entonces esta mal
-			return 0;
-		}
-		else{
-			for(int j = 0; j < longitud(parametro); j++){
-				char* verificoDosPuntos = strtok(parametro, ":");
-				if(verificoDosPuntos == NULL){
-					return 0;
-				}
-				else{
-					int comillas = 0;
-					if(longitud(verificoDosPuntos) == 1){ //Si tiene solo dos posiciones
-						for(int z=0; z<2; z++){
-							if(verificoDosPuntos[z] == "\""){ //Chequear si esto es asi como java o [j][z]
-								comillas++;
-							}
-						}
-					}
-					else{
-						return 0;
-					}
-					if(comillas == 2 && (verificoDosPuntos[0] == "\"") && (verificoDosPuntos[longitud(verificoDosPuntos)-1] == "\"")){
-						comillas = 0;
-					}
-					else{ //Si no tiene la comilla inicial y final y son mas o menos de dos comillas esta mal
-						return 0;
-					}
-				}
-			}
-		}
-	}
-
-	if((llavePrincipal == 0) || (llavePrincipal >= 2)){
-		if(llaveFinal == 0 || llaveFinal > 1){
-			return 0;
-		}
-	}
-	if(cadena[longitud(cadena)-1] == '}' && cadena[0] == '{'){
-		return 1;
-	}
-	return 0; //ya si no entra al for ya directamente es que no tiene formato json
-	// {"status":"error","message":"Mensaje descriptivo del error."}
-	//{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}
-}
-
 /* Lo que esta dentro de estos comentarios debe ir a una libreria */
 char* substr(char* cadena, int comienzo, int longitud) {
 	if (longitud == 0)
@@ -120,6 +63,72 @@ char* substrHasta(char* cadena, int comienzo, char caracter) {
 	strncpy(nuevo, cadena + comienzo, longitud - 1);
 
 	return nuevo;
+}
+
+short formatoJson(char* cadena) {
+	int llavePrincipal = 0;
+	int llaveFinal = 0;
+	//int verificadoTotal = 0;
+
+	for (int i = 0; i < longitud(cadena); i++) {
+
+//		if (cadena[i] == '{') {
+		if (cadena[i] == 123) {
+			llavePrincipal++;
+		}
+
+		//			if (cadena[i] == '}') {
+		if (cadena[i] == 125) {
+			llaveFinal++;
+		}
+
+		// FIXME esto corta el string habria que trabajarlo con substring llendo desde la posicion de la primer como hasta la de la segunda
+		char* parametro = strtok(cadena, ","); //El famoso split de java
+
+//		printf("|%s|\n", cadena);
+
+		if (parametro) { //Si no hay coma entonces esta mal
+			return 0;
+		} else {
+			for (int j = 0; j < longitud(parametro); j++) {
+				char* verificoDosPuntos = strtok(parametro, ":");
+				if (verificoDosPuntos) {
+					return 0;
+				} else {
+					int comillas = 0;
+					if (longitud(verificoDosPuntos) == 1) { //Si tiene solo dos posiciones
+						for (int z = 0; z < 2; z++) {
+//							if (verificoDosPuntos[z] == "\"") { //Chequear si esto es asi como java o [j][z]
+							if (verificoDosPuntos[z] == 34) { //Chequear si esto es asi como java o [j][z]
+								comillas++;
+							}
+						}
+					} else {
+						return 0;
+					}
+					if (comillas == 2 && (verificoDosPuntos[0] == 34) && (verificoDosPuntos[longitud(verificoDosPuntos) - 1] == 34)) {
+						comillas = 0;
+					} else { //Si no tiene la comilla inicial y final y son mas o menos de dos comillas esta mal
+						return 0;
+					}
+				}
+			}
+		}
+	}
+
+	if ((llavePrincipal == 0) || (llavePrincipal >= 2)) {
+		if (llaveFinal == 0 || llaveFinal > 1) {
+			return 0;
+		}
+	}
+
+//	if (cadena[longitud(cadena) - 1] == '}' && cadena[0] == '{') {
+	if (cadena[longitud(cadena) - 1] == 125 && cadena[0] == 123) {
+		return 1;
+	}
+	return 0; //ya si no entra al for ya directamente es que no tiene formato json
+	// {"status":"error","message":"Mensaje descriptivo del error."}
+	//{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}
 }
 
 // XXX toma papa esto es eda para vos =P
@@ -188,6 +197,9 @@ void errores(int codError, char* extra) {
 	case 7:
 		fprintf(stderr, "%s es de un tipo de dato invalido.", extra);
 		break;
+	case 8:
+		fprintf(stderr, "Formato de JSON no voalido en %s.", extra);
+		break;
 	default:
 		fprintf(stderr, "Danger, Will Robinson...");
 		break;
@@ -227,9 +239,7 @@ int verificarCoincidenciaKey(char* file, char* key) {
 
 		if (archivoS[0] == 48) { // 48 = 0 en ascii
 			char* voS = recuperarKeyString(archivoS);
-//			printf("%s == %s\n", voS, key);
 			if (strcmp(key, voS) == 0) {
-//				printf("OK");
 				return contador;
 			}
 		}
@@ -248,11 +258,8 @@ char* buscarClaveValor(char* string, char* clave) {
 	char* dato = strstr(string, str);
 
 	int posIni = strlen(str);
-//	printf("%i", posIni);
 	key = substrHasta(dato, posIni, ',');
-//	key = substr(key, 0, longitud(key) - 1);
 
-//	exit(0);
 	return trim(key);
 }
 
@@ -493,11 +500,7 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 }
 
 int main(int argc, char *argv[]) {
-	int arg;
-	char texto[512];
-	char archivo[50];
-	int flagArchivo = 0;
-	int flagAdd = 0;
+	char *dato = malloc(4096);
 
 	int accion = 0;
 
@@ -529,13 +532,24 @@ int main(int argc, char *argv[]) {
 
 		if ((!argv[3]) || (strcmp(argv[3], "-value") != 0)) {
 
-//			printf("%s", argv);
+//			char * pepino;
+//			freopen(pepino, "r", stdin);
+//			printf("%s", pepino);
 			errores(1, "");
 			// XXX aca hay que verificar si no hay nada en el stdin
+		} else {
+
+			dato = argv[4];
+//			printf("%s\n", argv[4]);
 		}
 
-		agregarDato(argv[4], argv[2]);
-
+		// XXX no se implementa porque hay que corregir la funcion que comprueba el JSON
+//		if (formatoJson(dato) == 1) {
+		agregarDato(dato, argv[2]);
+//		} else {
+//			printf("%s\n", dato);
+//			errores(8, dato);
+//		}
 		break;
 
 	case 'r':
@@ -559,7 +573,6 @@ int main(int argc, char *argv[]) {
 		if (argv[2][0] == '-') {
 			errores(1, "");
 		}
-		char *dato = malloc(4096);
 		dato = argv[4];
 		updateDato(dato, argv[2]);
 		break;
@@ -586,8 +599,5 @@ int main(int argc, char *argv[]) {
 		errores(2, argv[1]);
 	}
 
-	if (flagAdd == 1) {
-		printf("Los datos agregados quedaron de la siguiente manera: %s\n", texto);
-	}
 	exit(0);
 }
