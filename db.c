@@ -65,6 +65,13 @@ char* substrHasta(char* cadena, int comienzo, char caracter) {
 	return nuevo;
 }
 
+// XXX toma papa esto es eda para vos =P
+char* trim(char* cadena) {
+	if (cadena[0] == ' ') {
+		cadena = trim(cadena + 1);
+	}
+	return cadena;
+}
 /* Fin del codigo de libreria */
 
 /* MAQUETADO DE FUNCIONES */
@@ -117,6 +124,9 @@ void errores(int codError, char* extra) {
 		break;
 	case 5:
 		fprintf(stderr, "No se encontro la clave %s en el archivo.", extra);
+		break;
+	case 6:
+		fprintf(stderr, "Operador %s invalido.", extra);
 		break;
 	default:
 		fprintf(stderr, "Danger, Will Robinson...");
@@ -183,7 +193,7 @@ char* buscarClaveValor(char* string, char* clave) {
 //	key = substr(key, 0, longitud(key) - 1);
 
 //	exit(0);
-	return key;
+	return trim(key);
 }
 
 void agregarDato(char *dato, char *archivo) {
@@ -315,15 +325,44 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 
 	while (!feof(fil)) {
 		fgets(line, 4096, fil);
+		if (line[0] == 48) { // 48 = 0 en ascii
 
-		char *dat = buscarClaveValor(line, campo);
+//			printf("%s", line);
 
-		printf("%s", dat);
+			char *dat = buscarClaveValor(line, campo);
 
+//			printf("%s\n", dat);
+			if (dat) {
+
+//			eq: igual
+//			ne: distinto
+//			gt : Mayor que
+//			lt : Menor que
+//			gte : Mayor o igual que
+//			lte : Menor o o igual quevalor
+//			cnt : el atributo contiene el valor.
+
+				if (strcmp(operador, "eq") == 0) {
+					// XXX ahora vamos a hacer que lo muestre por pantalla pero yo lo retornaria y que se muestre en otro lado
+					if (strcmp(dat, trim(valor)) == 0) {
+						printf("%s", line);
+					}
+				} else if (strcmp(operador, "ne") == 0) {
+				} else if (strcmp(operador, "gt") == 0) {
+				} else if (strcmp(operador, "lt") == 0) {
+				} else if (strcmp(operador, "gte") == 0) {
+				} else if (strcmp(operador, "lte") == 0) {
+				} else if (strcmp(operador, "cnt") == 0) {
+				} else {
+					errores(6, operador);
+				}
+			}
+		}
 		// FIXME no se por que mierda pincha aca
 		// se supone que deberia recorrer el archivo completo pero si saco el exit tira error T_T
+		// XXX hay que revisar porque el error lo tira cuando hay alguna linea en blanco
 
-		exit(0);
+//		exit(0);
 	}
 
 //	fclose(fil);
