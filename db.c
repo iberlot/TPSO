@@ -76,6 +76,7 @@ void agregarDato(char *dato, char *archivo);
 void removerDato(char *archivo, char* key);
 void updateDato(char *dato, char *archivo);
 void getDato(char *key, char *archivo);
+char* buscarClaveValor(char* string, char* clave);
 
 /* FIN DE MAQUETADO */
 
@@ -165,6 +166,27 @@ int verificarCoincidenciaKey(char* file, char* key) {
 	}
 
 	return 0;
+}
+
+char* buscarClaveValor(char* string, char* clave) {
+	char* key;
+	char *str = malloc(512);
+
+	snprintf(str, 256, "\"%s\":", clave);
+
+//	printf("%s", str);
+	char* dato = strstr(string, str);
+
+//	printf("%s", dato);
+	int posIni = strlen(dato);
+
+//	printf("%i", posIni);
+
+	key = substrHasta(dato, posIni, ',');
+//	key = substr(key, 0, longitud(key) - 1);
+
+	printf("%s", key);
+	return key;
 }
 
 void agregarDato(char *dato, char *archivo) {
@@ -284,34 +306,23 @@ void getDato(char *key, char *archivo) {
 
 void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 	FILE *fil; // @suppress("Type cannot be resolved")
-//		char archivo[4096];
-	/*
-	 if (existe(archivo) == 1) { //Si el archivo no existe
-	 errores(4, archivo);
-	 }
 
-	 int num = verificarCoincidenciaKey(archivo, substr(argv[4], 23, 4));
+	fil = fopen(archivo, "r"); //No verifica cuando no existe el archivo
 
-	 fil = fopen(archivo, "r"); //No verifica cuando no existe el archivo
+	if (!fil) {
+		errores(4, archivo);
+	}
 
-	 if (num != 0) {
-	 errores(3, substr(argv[4], 23, 4));
-	 } else {
-	 char line[256];
-	 int count = 0;
-	 while (fgets(line, sizeof line, fil) != 0)
-	 {
-	 if (count == num) {
-	 //Aca muestra por pantalla lo que encontro ya editado
-	 printf("%s", line);
-	 fclose(fil);
-	 } else {
-	 count++;
-	 }
-	 }
-	 ///db get person.dat -key abcd
-	 //No se como poner el tema del filter. Mañana lo vemos
-	 }*/
+	char line[4096];
+	int count = 0;
+	while (fgets(line, sizeof line, fil) != 0) {
+
+		char *dat = buscarClaveValor(line, campo);
+
+		printf("%s", dat);
+
+	}
+	fclose(fil);
 }
 
 int main(int argc, char *argv[]) {
