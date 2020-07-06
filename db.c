@@ -4,6 +4,63 @@
 //#include <auxiliares.h>
 //#include "auxiliares.c"
 
+short formatoJson(char* cadena){
+	int llavePrincipal = 0;
+	int llaveFinal = 0;
+	//int verificadoTotal = 0;
+	for(int i = 0; i < longitud(cadena); i++){
+		if(cadena[i] == '{'){
+			llavePrincipal++;
+		}
+		if(cadena[i] == '}'){
+			llaveFinal++;
+		}
+		char* parametro = strtok(cadena, ","); //El famoso split de java
+		if(parametro == NULL){ //Si no hay coma entonces esta mal
+			return 0;
+		}
+		else{
+			for(int j = 0; j < longitud(parametro); j++){
+				char* verificoDosPuntos = strtok(parametro, ":");
+				if(verificoDosPuntos == NULL){
+					return 0;
+				}
+				else{
+					int comillas = 0;
+					if(longitud(verificoDosPuntos) == 1){ //Si tiene solo dos posiciones
+						for(int z=0; z<2; z++){
+							if(verificoDosPuntos[z] == "\""){ //Chequear si esto es asi como java o [j][z]
+								comillas++;
+							}
+						}
+					}
+					else{
+						return 0;
+					}
+					if(comillas == 2 && (verificoDosPuntos[0] == "\"") && (verificoDosPuntos[longitud(verificoDosPuntos)-1] == "\"")){
+						comillas = 0;
+					}
+					else{ //Si no tiene la comilla inicial y final y son mas o menos de dos comillas esta mal
+						return 0;
+					}
+				}
+			}
+		}
+	}
+
+	if((llavePrincipal == 0) || (llavePrincipal >= 2)){
+		if(llaveFinal == 0 || llaveFinal > 1){
+			return 0;
+		}
+	}
+	if(cadena[longitud(cadena)-1] == '}' && cadena[0] == '{'){
+		return 1;
+	}
+	return 0; //ya si no entra al for ya directamente es que no tiene formato json
+	// {"status":"error","message":"Mensaje descriptivo del error."}
+	//{"key":"abcd","name":"Juan Perez","age":32,"height":1.76,"hasLicence":true}
+}
+
 /* Lo que esta dentro de estos comentarios debe ir a una libreria */
 char* substr(char* cadena, int comienzo, int longitud) {
 	if (longitud == 0)
