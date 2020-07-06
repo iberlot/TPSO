@@ -128,6 +128,9 @@ void errores(int codError, char* extra) {
 	case 6:
 		fprintf(stderr, "Operador %s invalido.", extra);
 		break;
+	case 7:
+		fprintf(stderr, "%s es de un tipo de dato invalido.", extra);
+		break;
 	default:
 		fprintf(stderr, "Danger, Will Robinson...");
 		break;
@@ -327,11 +330,8 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 		fgets(line, 4096, fil);
 		if (line[0] == 48) { // 48 = 0 en ascii
 
-//			printf("%s", line);
-
 			char *dat = buscarClaveValor(line, campo);
 
-//			printf("%s\n", dat);
 			if (dat) {
 
 //			eq: igual
@@ -348,11 +348,78 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 						printf("%s", line);
 					}
 				} else if (strcmp(operador, "ne") == 0) {
+					if (strcmp(dat, trim(valor)) != 0) {
+						printf("%s", line);
+					}
 				} else if (strcmp(operador, "gt") == 0) {
+					double fdato = atof(dat);
+					double fvalor = atof(valor);
+					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
+					if (fdato == 0.0) {
+						errores(7, fdato);
+					}
+					if (fvalor == 0.0) {
+						errores(7, fdato);
+					}
+
+					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
+					if (fdato > fvalor) {
+						printf("%s", line);
+					}
 				} else if (strcmp(operador, "lt") == 0) {
+
+					double fdato = atof(dat);
+					double fvalor = atof(valor);
+					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
+					if (fdato == 0.0) {
+						errores(7, fdato);
+					}
+					if (fvalor == 0.0) {
+						errores(7, fdato);
+					}
+
+					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
+					if (fdato < fvalor) {
+						printf("%s", line);
+					}
 				} else if (strcmp(operador, "gte") == 0) {
+
+					double fdato = atof(dat);
+					double fvalor = atof(valor);
+					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
+					if (fdato == 0.0) {
+						errores(7, fdato);
+					}
+					if (fvalor == 0.0) {
+						errores(7, fdato);
+					}
+
+					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
+					if (fdato >= fvalor) {
+						printf("%s", line);
+					}
 				} else if (strcmp(operador, "lte") == 0) {
+
+					double fdato = atof(dat);
+					double fvalor = atof(valor);
+					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
+					if (fdato == 0.0) {
+						errores(7, fdato);
+					}
+					if (fvalor == 0.0) {
+						errores(7, fdato);
+					}
+
+					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
+					if (fdato <= fvalor) {
+						printf("%s", line);
+					}
 				} else if (strcmp(operador, "cnt") == 0) {
+					char* dato = strstr(dat, valor);
+					if (dato) {
+						printf("%s", line);
+					}
+
 				} else {
 					errores(6, operador);
 				}
