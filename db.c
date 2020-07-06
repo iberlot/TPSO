@@ -59,6 +59,7 @@ char* substrHasta(char* cadena, int comienzo, char caracter) {
 	int longitud = EncontrarPrimeraPosicion(aux, caracter);
 
 	nuevo[longitud] = '\0';
+
 	strncpy(nuevo, cadena + comienzo, longitud - 1);
 
 	return nuevo;
@@ -174,18 +175,14 @@ char* buscarClaveValor(char* string, char* clave) {
 
 	snprintf(str, 256, "\"%s\":", clave);
 
-//	printf("%s", str);
 	char* dato = strstr(string, str);
 
-//	printf("%s", dato);
-	int posIni = strlen(dato);
-
+	int posIni = strlen(str);
 //	printf("%i", posIni);
-
 	key = substrHasta(dato, posIni, ',');
 //	key = substr(key, 0, longitud(key) - 1);
 
-	printf("%s", key);
+//	exit(0);
 	return key;
 }
 
@@ -315,14 +312,21 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 
 	char line[4096];
 	int count = 0;
-	while (fgets(line, sizeof line, fil) != 0) {
+
+	while (!feof(fil)) {
+		fgets(line, 4096, fil);
 
 		char *dat = buscarClaveValor(line, campo);
 
 		printf("%s", dat);
 
+		// FIXME no se por que mierda pincha aca
+		// se supone que deberia recorrer el archivo completo pero si saco el exit tira error T_T
+
+		exit(0);
 	}
-	fclose(fil);
+
+//	fclose(fil);
 }
 
 int main(int argc, char *argv[]) {
