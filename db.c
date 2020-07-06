@@ -356,10 +356,10 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 					double fvalor = atof(valor);
 					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
 					if (fdato == 0.0) {
-						errores(7, fdato);
+						errores(7, dat);
 					}
 					if (fvalor == 0.0) {
-						errores(7, fdato);
+						errores(7, valor);
 					}
 
 					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
@@ -372,10 +372,10 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 					double fvalor = atof(valor);
 					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
 					if (fdato == 0.0) {
-						errores(7, fdato);
+						errores(7, dat);
 					}
 					if (fvalor == 0.0) {
-						errores(7, fdato);
+						errores(7, valor);
 					}
 
 					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
@@ -388,10 +388,10 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 					double fvalor = atof(valor);
 					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
 					if (fdato == 0.0) {
-						errores(7, fdato);
+						errores(7, dat);
 					}
 					if (fvalor == 0.0) {
-						errores(7, fdato);
+						errores(7, valor);
 					}
 
 					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
@@ -404,10 +404,10 @@ void getDatoFilter(char *campo, char *operador, char *valor, char *archivo) {
 					double fvalor = atof(valor);
 					// esto es la mierda de dificil porque el redondeo de los floats es imprecisio y horrible
 					if (fdato == 0.0) {
-						errores(7, fdato);
+						errores(7, dat);
 					}
 					if (fvalor == 0.0) {
-						errores(7, fdato);
+						errores(7, valor);
 					}
 
 					// XXX Por ahora se lo deja asi pero hay que revisarlo porque puede tirar inconsistencias con los decimales por temas de redondeo
@@ -471,6 +471,8 @@ int main(int argc, char *argv[]) {
 		}
 
 		if ((!argv[3]) || (strcmp(argv[3], "-value") != 0)) {
+
+//			printf("%s", argv);
 			errores(1, "");
 			// XXX aca hay que verificar si no hay nada en el stdin
 		}
